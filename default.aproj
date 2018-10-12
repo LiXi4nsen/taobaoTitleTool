@@ -1,0 +1,5 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<project ver="10" name="标题生成" libEmbed="true" icon="..." ui="win" output="标题生成.exe" CompanyName="单位名称" FileDescription="标题生成" LegalCopyright="Copyright (C) 单位名称 2018" ProductName="标题生成" InternalName="标题生成" FileVersion="0.0.0.03" ProductVersion="0.0.0.03" publishDir="/Publish/" dstrip="false">
+	<file name="main.aardio" path="main.aardio" comment="main.aardio"/>
+	<folder name="资源文件" path="res" embed="true"/>
+</project>

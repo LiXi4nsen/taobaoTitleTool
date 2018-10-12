@@ -1,0 +1,178 @@
+﻿import web.rest.jsonLiteClient;
+import inet.http;
+import web.json;
+import console;
+
+namespace lao
+
+clientFun = function(cookies,header){
+	var jsonLiteClient = ..web.rest.jsonLiteClient()
+	if(cookies != null or header != null ){
+		jsonLiteClient._http.disableCache(); 
+		jsonLiteClient._http.disableCookies();
+	}
+	var headerTable = {
+			["User-Agent"] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36 Edge/15.15063"
+	}
+	if(header != null){
+		jsonLiteClient.addHeaders = header
+	}elseif(cookies === null){
+		jsonLiteClient.addHeaders = headerTable
+	}else {
+		headerTable["Cookie"] = cookies
+		jsonLiteClient.addHeaders = headerTable
+	}
+	return jsonLiteClient; 
+}
+
+httpFun = function(cookies,header,disable=true){
+	var http = ..inet.http()
+	if(disable){
+		http.disableCache(); 
+		http.disableCookies();
+	}
+	var headerTable = {
+			["User-Agent"] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36 Edge/15.15063"
+	}
+	if(header != null){
+		http.addHeaders = header
+	}elseif(cookies === null){
+		http.addHeaders = headerTable
+	}else {
+		headerTable["Cookie"] = cookies
+		http.addHeaders = headerTable
+	}
+	return http; 
+}
+
+//输入处理
+getShuRu = function(gjcs){
+	var gjcTable = ..string.split(gjcs,'<\r\n>')
+	var faTable = {}
+	var chongTable = {}
+	var faStr = ""
+	for k,v in gjcTable if(v != "" and !chongTable[v]){..table.push(faTable,v);chongTable[v]=true;faStr = ..string.concat(faStr,v,'\r\n')}
+	return faTable,faStr; 
+}
+
+//处理字符串数量
+getStrNum = function(title,num,rerepeat=false,respace=false,disce=true){
+    var newTitle = ""
+    var chong = {}
+	var strTable = ..string.split(title,"")
+	for k,v in strTable{
+		if(v = "") continue;
+		if(chong[v] and rerepeat) continue;
+		if(v = " " and respace) continue;
+		chong[v]  = true
+		if(..string.find(v,"[\a\d\s]") and disce){
+			num--
+		}else {
+			if(disce) num--
+			num--
+		}
+		if(num>=0) newTitle = ..string.concat(newTitle,v)
+	}
+	var shengTitle = ..string.replace(title,"@" ++ newTitle,"")
+	return newTitle,shengTitle; 
+}
+
+//初始化配置
+initialFun = function(path){
+    if(!..io.exist(path)){
+		var StrTable = {}
+		var str = ..web.json.stringify(StrTable)
+		..string.save(path, str)
+	}
+}
+
+//加载获取表数据 
+loadTableFun = function(path,tables,name="itemId"){
+    var pathTable = ..web.json.parse(..string.load(path))
+    var item = {}
+    for k,v in tables{
+    	if(!pathTable[v[name]]) ..table.push(item,v)
+    }
+    return item;
+}
+
+//加载获取表数据 
+saveTableFun = function(path,tables,name="itemId"){
+    var pathTable = ..web.json.parse(..string.load(path))
+    //..console.dumpJson(pathTable)
+    for k,v in tables{
+    	if(!pathTable[v[name]]) pathTable[v[name]] = v
+    }
+	..string.save(path, ..web.json.stringify(pathTable))
+}
+
+//按宝贝总数量获取所有页的宝贝
+getTotalPage = function(fun,pageNum=20,...){
+	var sleepTime = 2000
+    //var pageNum = 20
+	var page = 1
+	var totalPage = 0
+	var getTable = {}
+	var data = {}
+	var faTable;
+	do{
+		faTable = fun(page,...)
+		data = ..table.concat(data,faTable.data)
+		if(page == 1){
+			totalPage = ..math.ceil( faTable.totalNum/pageNum)
+			getTable.totalNum = faTable.totalNum
+		}
+		page++;
+		totalPage--;
+		..win.delay(sleepTime)
+	}while(totalPage>0)
+	getTable.data = data
+	return getTable; 
+}
+
+//按一页宝贝数量循环获取到最后一页
+getToPage = function(fun,pageNum=20,...){
+	var sleepTime = 2000
+    //var pageNum = 20
+	var page = 1
+	var getTable = {}
+	var data = {}
+	var faTable;
+	do{
+		..console.dumpJson(page)
+		faTable = fun(page,...)
+		data = ..table.concat(data,faTable.data)
+		page++;
+		..win.delay(sleepTime)
+		..console.dumpJson(#faTable.data)
+		..console.dumpJson(pageNum)
+	}while(#faTable.data == pageNum)
+	getTable.data = data
+	return getTable; 
+}
+
+guolvFun = function(title,weiTable){
+	for k,v in weiTable{
+		var strv = ..string.split(v," ")
+		var vmun = 0
+		var hmun = 0
+		for kk,vv in strv{
+			if(vv = "") continue;
+			vmun++
+			if(..string.find(title , "@"++vv )){
+				hmun++
+			}
+		}
+		if(vmun !=0 and vmun == hmun){
+			return v; 
+		}
+	}
+	return; 
+}
+
+/**intellisense()
+lao.getShuRu(.("文本") = 处理输入
+lao.initialFun(.("path") = 初始化表
+lao.getTotalPage(.("fun","一页数量") = 按宝贝总数量获取所有页的宝贝
+lao.getToPage(.("fun","一页数量") = 按一页宝贝数量循环获取到最后一页
+end intellisense**/

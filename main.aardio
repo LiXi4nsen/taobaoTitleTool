@@ -1,0 +1,146 @@
+import win.ui;
+import win.clip;
+import lao;
+import lao.titleCreate;
+import carl.ctrl.listviewex;
+/*DSG{{*/
+var winform = win.form(text="标题生成";right=973;bottom=619)
+winform.add(
+button={cls="button";text="获取下拉词";left=376;top=32;right=464;bottom=62;z=14};
+button2={cls="button";text="打开目录";left=376;top=320;right=464;bottom=350;z=9};
+button3={cls="button";text="提取词根";left=31;top=411;right=229;bottom=443;disabled=1;z=16};
+button4={cls="button";text="优化词根";left=264;top=411;right=462;bottom=443;disabled=1;z=17};
+button5={cls="button";text="清空词根";left=31;top=467;right=229;bottom=499;disabled=1;z=18};
+button6={cls="button";text="统计词根";left=264;top=467;right=462;bottom=499;disabled=1;z=19};
+button7={cls="button";text="生成标题";left=31;top=524;right=462;bottom=567;disabled=1;z=20};
+button8={cls="button";text="清空标题";left=512;top=533;right=710;bottom=565;disabled=1;z=22};
+button9={cls="button";text="复制标题";left=745;top=533;right=943;bottom=565;disabled=1;z=23};
+edit={cls="edit";text="如：鞋子";left=117;top=35;right=366;bottom=60;db=1;dl=1;dr=1;dt=1;edge=1;font=LOGFONT(name='黑体';h=-16);z=5};
+edit2={cls="edit";text="edit2";left=116;top=322;right=365;bottom=347;db=1;dl=1;dr=1;dt=1;edge=1;font=LOGFONT(name='黑体';h=-16);readonly=1;z=8};
+edit3={cls="edit";text="50";left=120;top=364;right=230;bottom=388;db=1;dl=1;dr=1;dt=1;edge=1;font=LOGFONT(name='黑体';h=-16);z=11};
+edit4={cls="edit";text="30";left=354;top=364;right=464;bottom=388;db=1;dl=1;dr=1;dt=1;edge=1;font=LOGFONT(name='黑体';h=-16);z=13};
+groupbox={cls="groupbox";text="关键词区";left=16;top=13;right=477;bottom=603;edge=1;z=1};
+groupbox2={cls="groupbox";text="标题生成区";left=497;top=13;right=958;bottom=603;edge=1;z=3};
+groupbox3={cls="groupbox";text="下拉词(词根)";left=29;top=68;right=464;bottom=297;edge=1;z=6};
+groupbox4={cls="groupbox";text="词根组合区";left=23;top=302;right=470;bottom=596;edge=1;z=2};
+richedit={cls="richedit";text="输入产品类型，点击“获取下拉词”获取词根";left=34;top=86;right=458;bottom=291;autohscroll=false;edge=1;multiline=1;vscroll=1;z=15};
+richedit2={cls="richedit";text="左侧生成标题";left=504;top=32;right=950;bottom=513;autohscroll=false;edge=1;multiline=1;vscroll=1;z=21};
+static={cls="static";text="产品类型：";left=29;top=35;right=120;bottom=57;font=LOGFONT(name='微软雅黑';h=-16);transparent=1;z=4};
+static2={cls="static";text="屏蔽词：";left=34;top=323;right=125;bottom=345;font=LOGFONT(name='微软雅黑';h=-16);transparent=1;z=7};
+static3={cls="static";text="标题数量：";left=33;top=364;right=124;bottom=386;font=LOGFONT(name='微软雅黑';h=-16);transparent=1;z=10};
+static4={cls="static";text="标题长度：";left=267;top=365;right=358;bottom=387;font=LOGFONT(name='微软雅黑';h=-16);transparent=1;z=12}
+)
+/*}}*/
+
+winform.richedit.onnotify = function(id,code,ptr){
+        winform.edit.vScroll()
+}
+winform.richedit2.onnotify = function(id,code,ptr){
+        winform.edit.vScroll()
+}
+
+winform.button.oncommand = function(id,event){
+    var keyWord = winform.edit.text
+	var keyRoot = lao.titleCreate.taobaoKeywordDig(keyWord);
+	winform.richedit.text = "";
+
+	for(num, word in keyRoot){
+		var targetWord = ..string.replace(word.key, keyWord, "");
+		winform.richedit.print(targetWord);
+	};
+	
+	winform.button3.disabled = false;
+	winform.button4.disabled = false;
+	winform.button5.disabled = false;
+	winform.button6.disabled = false;
+	winform.button7.disabled = false;
+	winform.button8.disabled = false;
+	winform.button9.disabled = false;
+};
+
+winform.button3.oncommand = function(id,event){
+    var keyWord = winform.edit.text;
+    var keyRoot = lao.titleCreate.getRootKeyWord(keyWord);
+    winform.richedit.text = "";
+
+	var keyRoot2 = ..table.unique(keyRoot);
+	
+	for(num, word in keyRoot2){
+		winform.richedit.print(word);
+	}
+}
+
+winform.button4.oncommand = function(id,event){
+	var text = winform.richedit.text;
+	text = ..string.replace(text, " ", "");
+	var textTable = ..string.split(text, '\r');
+	var finalText = "";
+	for (num, str in textTable){
+		if (..string.len(str) <= 2){
+			..table.remove(textTable, num)
+		}
+		else {
+			finalText = ..string.concat(finalText, str)
+		}
+	}
+	
+	winform.richedit.text = "";
+	winform.richedit.text = finalText;
+}
+
+winform.button5.oncommand = function(id,event){
+	var text = winform.richedit.text;
+	winform.richedit.text = "";
+	winform.richedit.text = "输入产品类型，点击“获取下拉词”获取词根";
+}
+
+winform.button7.oncommand = function(id,event){
+	var rootText = winform.richedit.text;
+	var textTable = ..string.split(rootText, '\r');
+	var times = winform.edit3.text
+	var length = winform.edit4.text 
+	var titles = "";
+	
+	
+	
+	for (num=1;tonumber(times);1){
+		winform.richedit2.text = "";
+		textTable = ..table.shuffle(textTable);
+		var title = ""
+		for (num, str in textTable){
+			str = ..string.replace(str, '\n', "");
+			
+			if (str != 0){
+				title = title + str;
+				..console.log(title)
+			};
+	
+			title = ..string.replace(title, '\r', "")
+			title = ..string.replace(title, '\n', "")
+			title = ..string.left(title, tonumber(length));
+		}
+		titles = titles + title + '\r\n';
+		
+	}
+	winform.richedit2.text = titles	
+
+	//..console.log(titles)
+}
+
+winform.button8.oncommand = function(id,event){
+	winform.richedit2.text = "";
+}
+
+winform.button9.oncommand = function(id,event){
+	var text = winform.richedit2.text;
+	win.clip.write(text)
+}
+
+winform.richedit2.oncommand = function(id,event){
+	
+}
+
+winform.enableDpiScaling();
+winform.show();
+
+return win.loopMessage();

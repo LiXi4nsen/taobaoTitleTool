@@ -1,0 +1,48 @@
+﻿import lao;
+import lao.tao;
+import console;
+import time;
+import inet.url
+import web.json
+import web.mshtml
+import win.ui;
+import carl.ctrl.listviewex;
+namespace lao.titleCreate;
+
+//淘宝关键词挖掘
+var resultGet = function(keyWord){
+	var httpProject = ..lao.httpFun();
+	var uKeyWord = ..inet.url.encode(keyWord);
+	var targetUrl = ..string.concat("https://suggest.taobao.com/sug?code=utf-8&q=", uKeyWord, "&k=1&area=c2c&bucketid=20");
+	var jsonHtml = httpProject.get(targetUrl);
+	var targetWordTable = ..web.json.parse(jsonHtml);
+	return targetWordTable;
+};	
+
+taobaoKeywordDig = function(rootKeyWord){
+	var faTable = {};
+	
+	for (k, v in resultGet(rootKeyWord).result){
+		var keyList = {};
+		keyList.key = v[1];
+		..table.push(faTable, keyList);
+	};
+	return faTable; 
+	..console.dumpJson(faTable);
+};
+
+//关键词处理
+getRootKeyWord = function(keyWord){
+	var root = taobaoKeywordDig(keyWord);
+	var faTable = {};
+	
+	for(kk, vv in root){
+		var keyList2 = taobaoKeywordDig(vv.key);
+		for (kkk, vvv in keyList2){
+			var targetKey = ..string.replace(vvv.key, vv.key, "");
+			..table.push(faTable, targetKey);
+		}
+	}
+	return faTable;
+}
+
